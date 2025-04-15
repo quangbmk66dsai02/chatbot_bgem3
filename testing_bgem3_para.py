@@ -99,7 +99,7 @@ def main():
     parser.add_argument('--mapping_csv', type=str, default='database_building/chunked_text_data.csv', help='Path to mapping CSV file')
     args = parser.parse_args()
 
-    file_path = '12-16k_test.json'  # Replace with your JSON file path
+    file_path = 'independent_10k_test.json'  # Replace with your JSON file path
     question_data_pairs = load_questions_and_data(file_path)
 
 # Accessing the structured data:
@@ -109,7 +109,8 @@ def main():
     index, mapping_df = load_faiss_index_and_mapping(args.faiss_index, args.mapping_csv)
     # fine_tuned_model = SentenceTransformer('fine-tuned-sentence-transformer')
     fine_tuned_model = SentenceTransformer('fine-tuned-sentence-transformer')
-
+    # fine_tuned_model = SentenceTransformer('BAAI/bge-m3')
+    print("THIS IS INDEX", index)
     # Perform the search
     num_correct = 0
     cnt = 0
@@ -120,13 +121,11 @@ def main():
         label = data
         k = args.k
         check = False
-        print("THIS IS LABEL", label)
-        print(f"\nPerforming search for query: '{query}' with top {k} results...\n")
         search_results = search_faiss(query, index, mapping_df, fine_tuned_model, k=10)
         for result in search_results:
-            print (result['chunk_id'])
             if result['chunk_id'] == label:
                 check = True
+                break
         if check:
             num_correct += 1
         
